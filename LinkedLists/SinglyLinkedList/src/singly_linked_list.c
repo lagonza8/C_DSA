@@ -47,7 +47,7 @@ return;
 void sl_list_destroy(SLList *list) {
   void *deleted_data;
 
-  printf("List destruction in progress... ");
+  puts("List destruction in progress... ");
   while( sl_list_size(list) > 0 ) {
     if( (sl_list_rem_next(list, NULL, (void **)&deleted_data) == 0) && (list->destroy != NULL) ) {
       printf("A node has been removed... ");
