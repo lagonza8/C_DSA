@@ -30,7 +30,7 @@ int main(void) {
 
   puts("\nSingly Linked List Abstract Data Type");
 
-  //Allocate memory for the list structure
+  // Allocate memory for the list structure
   SLList *my_list;
   if ( (my_list = (SLList *)(malloc(sizeof(SLList)))) == NULL ) {
     puts("Memory could not be allocated for list structure.");
@@ -70,7 +70,7 @@ int main(void) {
 
   /* Picture of linked list:
   
-       Head -> 6.0 -> NULL
+       Head -> [8] -> NULL
   */
 
   // Allocating memory for a new value
@@ -89,7 +89,7 @@ int main(void) {
    
 
   // Picture of linked list:
-  // Head -> -5.0 -> 6.0-> NULL
+  // Head -> [-50] -> [8] -> NULL
 
   // Allocating memory for a new value
   if ( (data = (int8_t *)malloc(sizeof(int8_t))) == NULL ) {
@@ -106,7 +106,8 @@ int main(void) {
   
 
   // Picture of linked list:
-  // Head -> 5.0 -> 6.0 -> 3.0 -> NULL
+  // Head -> [-50] -> [8] -> [100] -> NULL
+
 
   // Allocating memory for a new value
   if ( (data = (int8_t *)malloc(sizeof(int8_t))) == NULL ) {
@@ -123,31 +124,43 @@ int main(void) {
 
 
   // Picture of linked list:
-  // Head -> 5.0 -> 4.0 -> 6.0 -> 3.0 -> NULL
+  // Head -> [-50] -> [-48] -> [8] -> [100] -> NULL
+
 
   /* Removing elements manually */
   int8_t *value_removed;
   
-  // Removing the head element
+  // Removing the head element of the list
   assert( sl_list_rem_next(my_list, NULL, (void **)&value_removed) == 0);
+  assert( sl_list_size(my_list) == 3);
+  assert( *value_removed == -50 );
+
   printf("Value removed from list: %d\n\n", *value_removed);
   safe_free(value_removed);
 
 
   // Picture of linked list:
-  // Head -> 4.0 -> 6.0 -> 3.0 -> NULL
+  // Head -> [-48] -> [8] -> [100] -> NULL
+
 
   // Removing after tail, should produce error message.
-  assert(sl_list_rem_next(my_list, my_list->tail, (void **)&value_removed) == -1);
+  assert(sl_list_rem_next(my_list, sl_list_tail(my_list), (void **)&value_removed) == -1);
+  assert( sl_list_size(my_list) == 3);
+  assert(sl_list_next(sl_list_tail(my_list)) == NULL);
+  assert(sl_list_next(sl_list_head(my_list)) != NULL);
 
 
   // Removing the element after the head element
-  assert(sl_list_rem_next(my_list, my_list->head, (void **)&value_removed) == 0);
+  assert(sl_list_rem_next(my_list, sl_list_head(my_list), (void **)&value_removed) == 0);
+  assert( sl_list_size(my_list) == 2);
+  assert( *value_removed == 8 );
+
   printf("Value removed from list: %d\n\n", *value_removed);
   safe_free(value_removed);
 
   // Picture of linked list:
-  // Head -> 4.0 -> 3.0 -> NULL
+  // Head -> [-48] -> [100] -> NULL
+
 
   // Destroying the list after it is not needed.
   sl_list_destroy(my_list); //frees element structs, and data pointer
