@@ -1,69 +1,69 @@
 /* Singly linked list abstract data type */
 #include <stdio.h>
-#include <string.h>
+#include <string.h> // For memset()
 
 // Node for a singly linked list
 typedef struct SinglyLinkedListNode_ {
-  void *data;
-  struct SinglyLinkedListNode_ *next;
+  void                          *data;
+  struct SinglyLinkedListNode_  *next;
 } SLLNode;
 
 // A structure representing a singly linked list
 typedef struct SinglyLinkedList_ {
   size_t size;
-  SLLNode *tail;
   SLLNode *head;
+  SLLNode *tail;
   void (*destroy)(void *data);
+  void (*print_func)(void *data);
 } SLList;
 
 /* Public interface for the ADT */
 // Function forward declarations
-void sl_list_init(SLList *list, void (*destroy)(void *data));
+void sl_list_init(SLList *list, void (*destroy)(void *data), void (*print_formatting_func)(void *data));
 void sl_list_destroy(SLList *list);
-int sl_list_ins_next(SLList *list, SLLNode *node, const void *data);
+int sl_list_ins_next(SLList *list, SLLNode *node, void const *data);
 int sl_list_rem_next(SLList *list, SLLNode *node, void **data);
 
 // Macros
-#define sl_list_size(list) ((list)->size)
-#define sl_list_tail(list) ((list)->tail)
-#define sl_list_head(list) ((list)->head)
-#define sl_list_is_tail(node) ((node)->next == NULL ? 1: 0)
-#define sl_list_is_head(list, node) ((node) == (list)->head ? 1: 0)
-#define sl_list_data(node) ((node)->data)
-#define sl_list_next(node) ((node)->next)
-
+#define sl_list_size(list)          ((list)->size)
+#define sl_list_head(list)          ((list)->head)
+#define sl_list_tail(list)          ((list)->tail)
+#define sl_list_is_head(list, node) ((node) == (list)->head ? 1 : 0)
+#define sl_list_is_tail(node)       ((node)->next == NULL ? 1: 0)
+#define sl_list_data(node)          ((node)->data)
+#define sl_list_next(node)          ((node)->next)
 
 // Function implementations
-void sl_list_init(SLList *list, void (*destroy)(void *data)) {
-  printf("Initializing list... ");
+void sl_list_init(SLList *list, void (*destroy)(void *data), void (*print_formatting_func)(void *data)) {
+
+  printf("Initializing a singly linked list...");
   list->size = 0;
-  list->tail = NULL;
   list->head = NULL;
+  list->tail = NULL;
   list->destroy = destroy;
-  puts("Initialization completed.");
+  list->print_func = print_formatting_func;
+  puts("Initialization complete.");
+
 return;
 }
 
 void sl_list_destroy(SLList *list) {
-  void *deleted_data;
+  void *data;
 
-  puts("List destruction in progress... ");
   while( sl_list_size(list) > 0 ) {
-    if( (sl_list_rem_next(list, NULL, (void **)&deleted_data) == 0) && (list->destroy != NULL) ) {
-      printf("A node has been removed... ");
-      list->destroy(deleted_data);
-      puts("The node's data has been released."); 
+    if( (sl_list_rem_next(list, NULL, (void **)&data) == 0) && (list->destroy != NULL) ) {
+      list->destroy(data);
     }
   }
 
   memset(list, 0, sizeof(SLList));
-  puts("List destruction completed.");
 
 return;
 }
 
-int sl_list_ins_next(SLList *list, SLLNode *node, const void *data) {
-  //Allocate memory for the new node
+int sl_list_ins_next(SLList *list, SLLNode *node, void const *data) {
+
+  // Creation and initialization of a new node
   SLLNode *new_node;
   if( (new_node = (SLLNode *)malloc(sizeof(SLLNode))) == NULL ) {
     puts("Could not allocate memory for a new node.");
@@ -71,61 +71,53 @@ int sl_list_ins_next(SLList *list, SLLNode *node, const void *data) {
   }
   new_node->data = (void *)data;
 
-  //Inserting new node at the head of list
+  // Insertion
   if( node == NULL ) {
-    printf("Inserting new node at the head of the list... ");
     if( sl_list_size(list) == 0 ) {
       list->tail = new_node;
     }
     new_node->next = list->head;
     list->head = new_node;
   }
-  //Inserting new node elsewhere
   else {
-    printf("Inserting a new node in the list... ");
     if( node->next == NULL ) {
       list->tail = new_node;
-      printf("The list will have a new tail... ");
     }
     new_node->next = node->next;
     node->next = new_node;
   }
 
-  puts("Insertion completed.");
   list->size++;
 
 return 0;
 }
 
 int sl_list_rem_next(SLList *list, SLLNode *node, void **data) {
-  //Cannot remove a node from an empty list
+  
+  // Logic check, cannot remove from an empty list
   if( sl_list_size(list) == 0 ) {
-    puts("Cannot remove a node from an empty list.");
+    puts("Cannot remove a node from an empty linked list.");
     return -1;
   }
-  
-  SLLNode *deleted_node;
 
-  //Sentinal value is NULL for second argument, indicates removal of head node
+  SLLNode *deleted_node;  
+
   if( node == NULL ) {
-    printf("Deletion of head node in progress... ");
     *data = list->head->data;
     deleted_node = list->head;
+
     list->head = list->head->next;
-    
     if( sl_list_size(list) == 1 ) {
       list->tail = NULL;
     }
   }
-  //Otherwise, the node is being removed from elsewhere in the list
   else {
-    //Cannot remove a node that is after the tail of the list, it doesn't exist
+    // Logic check, cannot remove a node that comes after the tail of the linked list.
     if( node->next == NULL ) {
-      puts("Cannot remove a node that is after the tail of the list.");
+      puts("cannot remove a node that comes after the tail of the linked list.");
       return -1;
     }
 
-    printf("Deletion of arbitrary node in progress... ");
     *data = node->next->data;
     deleted_node = node->next;
 
@@ -136,10 +128,19 @@ int sl_list_rem_next(SLList *list, SLLNode *node, void **data) {
   }
 
   free(deleted_node);
-  puts("Node deleted.");
-
   list->size--;
 
 return 0;
 }
 
+void sl_list_print(SLList const *list) {
+  SLLNode *node;
+  printf("HEAD -> ");
+
+  for( node = sl_list_head(list); node != NULL; node = sl_list_next(node) ) {
+    void *data = sl_list_data(node);
+    list->print_func(data);
+  }
+
+  printf("NULL/TAIL\n");
+}
