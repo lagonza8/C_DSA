@@ -4,7 +4,7 @@
  *
  * Flags:
  * -std=c99             : Use the best C standard
- * -fsanitize=address   : address sanitizer enabled
+ * -fsanitize=address   : Address sanitizer enabled
  * -Wall                : All warnings are displayed
  * -Werror              : All warnings lead to compile-time errors
  * -g3                  : Add the most debugger info to file
@@ -24,21 +24,10 @@
 
 // Macro for safely freeing pointers, plus a forward declaration used by the macro
 #define safe_free(ptr) safer_free((void **)&ptr)
+
+//Forward declarations
 void safer_free(void **ptr);
-
-void print_formatting_func(void *data) {
-
-  // Determine the size of the string needed for data 
-  size_t size_of_formatted_string = snprintf(NULL, 0, "%d", *(int8_t *)data);
-  // Allocate memory for that formatted string
-  char *formatted_data_buffer = malloc(size_of_formatted_string + 1);
-  // Write your formatted string to the buffer
-  sprintf(formatted_data_buffer, "%d", *(int8_t *)data);
-  //Print out that buffer with printf...
-  printf("%s -> ", formatted_data_buffer);
-
-  safe_free(formatted_data_buffer);
-}
+void print_formatting_func(void *data);
 
 int main(void) {
 
@@ -180,17 +169,39 @@ int main(void) {
   sl_list_print(my_list);
 
   // Destroying the list after it is not needed.
-  sl_list_destroy(my_list); //frees element structs, and data pointer
+  sl_list_destroy(my_list); //frees element structs and their data pointer
   safe_free(my_list); //frees list pointer
   safe_free(value_removed); //frees pointer that returned data stored by deleted nodes
 
 return 0;
 }
 
-/* */
+/*******************************************************************************
+ * Title: "Understanding and Using C Pointers by Richard Reese (O'Reilly)
+ * Author(s): Richard Reese, Ph.D.
+ * Date: May 2023
+ * Section: "Writing your own free function"
+ * ISBN: 978-1-449-34418-4
+ *******************************************************************************/
 void safer_free(void **ptr) {
   if( ptr != NULL && *ptr != NULL ) {
     free(*ptr);
     *ptr = NULL;
   }
 }
+
+// User-defined function that prints the data stored by your elements.
+void print_formatting_func(void *data) {
+
+  // Determine the size of the string needed for data 
+  size_t size_of_formatted_string = snprintf(NULL, 0, "%d", *(int8_t *)data);
+  // Allocate memory for that formatted string
+  char *formatted_data_buffer = malloc(size_of_formatted_string + 1);
+  // Write your formatted string to the buffer
+  sprintf(formatted_data_buffer, "%d", *(int8_t *)data);
+  //Print out that buffer with printf...
+  printf("%s -> ", formatted_data_buffer);
+
+  safe_free(formatted_data_buffer);
+}
+

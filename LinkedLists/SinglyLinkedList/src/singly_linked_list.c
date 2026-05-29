@@ -1,3 +1,25 @@
+/*******************************************************************************
+ * Title: "Algorithms with C by Kyle Loudon (O'Reilly)
+ * Author(s): Kyle Loudon
+ * Date: August 1999
+ * ISBN-13: 978-1-565-92453-6
+ *
+ * This code is based on the original implementation cited above.
+ *
+ * Modifications I made were renaming element to node, which is the more common
+ * convention I see for the pieces of a linked list.
+ *
+ * I also included my own traverse-and-print function that allows the user to
+ * define a format that is suitable for their data. This function is passed to
+ * the list initialization function similar to the user-defined destroy function.
+ *
+ * Functions were prepended with sl or dl or cl to make clear that they are for
+ * a sinly linked list, a doubly linked list, and circularly linked list, respectively.
+ *******************************************************************************/
+
+
+
+
 /* Singly linked list abstract data type */
 #include <stdio.h>
 #include <string.h> // For memset()
@@ -133,6 +155,8 @@ int sl_list_rem_next(SLList *list, SLLNode *node, void **data) {
 return 0;
 }
 
+
+/* This function is not included in the text cited at top of page */
 void sl_list_print(SLList const *list) {
   SLLNode *node;
   printf("HEAD -> ");
