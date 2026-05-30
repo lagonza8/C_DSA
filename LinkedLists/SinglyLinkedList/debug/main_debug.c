@@ -47,7 +47,7 @@ int main(void) {
   assert(sl_list_head(my_list) == NULL);
 
 
-  // Declaring a pointer for integer data to be inserted into nodes/elements of the list
+  // Declaring a pointer for integer data to be inserted into nodes of the list
   int8_t *data;
 
   //allocating memory for each floating point value
@@ -57,14 +57,14 @@ int main(void) {
   }
   *data = 8;
 
-  // Trying to remove element from an empty list returns value of -1
+  // Trying to remove a node from an empty list returns value of -1
   assert(sl_list_rem_next(my_list, NULL, (void **)&data) == -1);
 
-  // Inserting the first element
+  // Inserting the first node
   assert(sl_list_ins_next(my_list, NULL, data) == 0);
   assert(sl_list_size(my_list) == 1); 
 
-  // Confirming that the first element is both the tail and head of the list.
+  // Confirming that the first node is both the tail and head of the list.
   assert(sl_list_is_tail(sl_list_head(my_list)) == 1);
   assert(sl_list_is_head(my_list, sl_list_head(my_list)) == 1);
 
@@ -83,7 +83,7 @@ int main(void) {
     puts("Failed to allocate memory for new datum.");
     return -1;
   }
-  // Assigning value to the pointer and creating new head element of the list
+  // Assigning value to the pointer and creating new head node of the list
   *data = -50;
   assert(sl_list_ins_next(my_list, NULL, data) == 0);
   assert(sl_list_size(my_list) == 2);
@@ -102,7 +102,7 @@ int main(void) {
     puts("Failed to allocate memory for new datum.");
     return -1;
   } 
-  // Assigning value to the pointer and creating new tail element of the list
+  // Assigning value to the pointer and creating new tail node of the list
   *data = 100;
   assert(sl_list_ins_next(my_list, sl_list_tail(my_list), data) == 0);
   assert(sl_list_size(my_list) == 3);
@@ -120,7 +120,7 @@ int main(void) {
     puts("Failed to allocate memory for new datum.");
     return -1;
   }
-  // Assigning value to the pointer and creating new element after the head of the list
+  // Assigning value to the pointer and creating new node after the head of the list
   *data = -48;
   assert(sl_list_ins_next(my_list, sl_list_head(my_list), data) == 0);
   assert(sl_list_size(my_list) == 4);
@@ -133,10 +133,10 @@ int main(void) {
   // Head -> [-50] -> [-48] -> [8] -> [100] -> NULL
   sl_list_print(my_list);
 
-  /* Removing elements manually */
+  /* Removing nodes one at a time */
   int8_t *value_removed;
   
-  // Removing the head element of the list
+  // Removing the head node of the list
   assert( sl_list_rem_next(my_list, NULL, (void **)&value_removed) == 0);
   assert( sl_list_size(my_list) == 3);
   assert( *value_removed == -50 );
@@ -156,7 +156,7 @@ int main(void) {
   assert(sl_list_next(sl_list_head(my_list)) != NULL);
 
 
-  // Removing the element after the head element
+  // Removing the node after the head of the list
   assert(sl_list_rem_next(my_list, sl_list_head(my_list), (void **)&value_removed) == 0);
   assert( sl_list_size(my_list) == 2);
   assert( *value_removed == 8 );
@@ -169,9 +169,9 @@ int main(void) {
   sl_list_print(my_list);
 
   // Destroying the list after it is not needed.
-  sl_list_destroy(my_list); //frees element structs and their data pointer
+  sl_list_destroy(my_list); //frees each node struct and their data pointer
   safe_free(my_list); //frees list pointer
-  safe_free(value_removed); //frees pointer that returned data stored by deleted nodes
+  safe_free(value_removed); 
 
 return 0;
 }
